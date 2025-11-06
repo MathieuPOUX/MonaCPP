@@ -16,7 +16,6 @@ details (or else see http://mozilla.org/MPL/2.0/).
 
 #include "Mona/Net/Net.h"
 #include "Mona/Application/Application.h"
-#include "Mona/Application/HelpFormatter.h"
 #include "Mona/Timing/Date.h"
 #if !defined(_WIN32)
 #include <signal.h>
@@ -83,12 +82,12 @@ bool Application::init(int argc, const char* argv[]) {
 	if (configPath) {
 		--argc;
 		// Set the current directory to the configuration file => forced to work with "dir/file.ini" argument (and win32 double click on ini file)
-		if(configPath.isFolder())
+		if(configPath.isFolder()) {
 			configPath.set(configPath, _name, ".ini");
-		else
-			_name = configPath.baseName(); // not make configuration "name" in ini file otherwise in service mode impossible to refind the correct ini file to load: service name must stay the base name of ini file!
-		if (!SetCurrentDirectory(configPath.parent().c_str()))
-			FATAL_ERROR("Cannot set current directory of ", name()); // useless to continue, the application could not report directory error (no logs, no init, etc...)
+			const string& parent = configPath.parent();
+			if (parent.size() && !SetCurrentDirectory(parent.c_str()))
+				FATAL_ERROR("Cannot set current directory of ", name()); // useless to continue, the application could not report directory error (no logs, no init, etc...)
+		}
 	} else
 		configPath.set(_name, ".ini");
 
@@ -98,7 +97,7 @@ bool Application::init(int argc, const char* argv[]) {
 		setString("application.configDir", configPath.parent());
 	} else {
 		if (iniParam)
-			FATAL_ERROR("Impossible to load configuration file ", name(), ".ini");
+			FATAL_ERROR("Impossible to load configuration file ", configPath.name());
 		configPath.reset();
 	}
 	setString("name", _name);
@@ -133,7 +132,7 @@ bool Application::init(int argc, const char* argv[]) {
 	if (_version)
 		INFO(name(), " v", _version);
 	if(configPath)
-		INFO("Load configuration file ", name(), ".ini");
+		INFO("Load configuration file ", configPath.name());
 
 	// 5 - define options: after configurations to override configurations (for logs.level for example) and to allow log in defineOptions
 	Exception ex;
@@ -173,8 +172,9 @@ void Application::displayHelp() {
 	HelpFormatter::Description description(_file.name().c_str(), _options);
 	String::Append(description.usage, " [/currentDir/[", _file.baseName(), ".ini]]");
 	description.header = get("description", name()).c_str();
-	HelpFormatter::Format(std::cout, description);
+	displayHelp(description);
 }
+
 
 bool Application::initLogs(string& directory, uint32_t& sizeByFile, uint16_t& rotation) {
 	if (!get<bool>("logs", true))

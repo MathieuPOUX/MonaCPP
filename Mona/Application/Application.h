@@ -19,6 +19,7 @@ details (or else see http://mozilla.org/MPL/2.0/).
 #include "Mona/Mona.h"
 #include "Mona/Util/Parameters.h"
 #include "Mona/Application/Options.h"
+#include "Mona/Application/HelpFormatter.h"
 #include "Mona/Logs/Logger.h"
 #include "Mona/Disk/File.h"
 #include "Mona/Util/Util.h"
@@ -71,6 +72,9 @@ protected:
 	virtual bool			initLogs(std::string& directory, uint32_t& sizeByFile, uint16_t& rotation);
 	virtual const char*		defineVersion() { return NULL; }
 	virtual void			defineOptions(Exception& ex, Options& options);
+	virtual void			displayHelp(HelpFormatter::Description& description) {
+		HelpFormatter::Format(std::cout, description);
+	}
 
 	virtual void			onParamChange(const std::string& key, const std::string* pValue);
 	virtual void			onParamClear();

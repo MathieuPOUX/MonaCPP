@@ -28,7 +28,7 @@ using namespace std;
 namespace Mona {
 
 #define TAB_WIDTH		4
-#define WIDTH			78
+#define WIDTH			100
 
 #define LONG_PREFIX		"--"
 #define SHORT_PREFIX	"-"
