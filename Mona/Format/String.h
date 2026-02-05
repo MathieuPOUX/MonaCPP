@@ -155,6 +155,11 @@ struct String : std::string {
 	static std::string  toLower(std::string value) { for (char& c : value) c = tolower(c); return value; }
 	static std::string	toUpper(std::string value) { for (char& c : value) c = toupper(c); return value; }
 
+	static bool startsWith(const std::string &value, const std::string &pattern);
+	static bool istartsWith(const std::string &value, const std::string &pattern);
+	static bool endsWith(const std::string &value, const std::string &pattern);
+	static bool iendsWith(const std::string &value, const std::string &pattern);
+
 	static int ICompare(const char* data, const char* value, std::size_t count = std::string::npos) { return ICompare(data, std::string::npos, value, count); }
 	static int ICompare(const char* data, std::size_t size, const char* value, std::size_t count = std::string::npos);
 	static int ICompare(const std::string& data, const char* value, std::size_t count = std::string::npos) { return ICompare(data.c_str(), data.size(), value, count); }

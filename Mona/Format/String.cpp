@@ -90,6 +90,34 @@ size_t String::Split(const char* value, size_t size, const char* separators, con
 	return count;
 }
 
+bool String::startsWith(const string &value, const string &pattern) {
+	if(value.size() < pattern.size()) {
+      return false;
+    }
+	return strncmp(value.data(), pattern.data(), pattern.size()) == 0;
+}
+
+bool String::istartsWith(const string &value, const string &pattern) {
+	if(value.size() < pattern.size()) {
+      return false;
+    }
+    return strncasecmp(value.data(), pattern.data(), pattern.size()) == 0;
+}
+
+bool String::endsWith(const string &value, const string &pattern) {
+	if(value.size() < pattern.size()) {
+		return false;
+	}
+	return strncmp(value.data() + value.size() - pattern.size(), pattern.data(), pattern.size()) == 0;
+}
+
+bool String::iendsWith(const string &value, const string &pattern) {
+	if(value.size() < pattern.size()) {
+		return false;
+	}
+	return strncasecmp(value.data() + value.size() - pattern.size(), pattern.data(), pattern.size()) == 0;
+}
+
 int String::ICompare(const char* data, size_t size, const char* value, size_t count) {
 	if (data == value)
 		return 0;
