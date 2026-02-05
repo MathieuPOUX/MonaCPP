@@ -308,13 +308,28 @@ template<typename Type1, typename Type2, typename ...Args>
 inline typename std::conditional<sizeof(Type1) >= sizeof(Type2), Type1, Type2>::type
 				  max(Type1 value1, Type2 value2, Args&&... args) { return value1 > value2 ? max(value1, args ...) : max(value2, args ...); }
 
-template<typename RangeType, typename Type>
-inline RangeType range(Type value) {
-	RangeType result = static_cast<RangeType>(value);
-	if (result < 0)
-		return value > 0 ? std::numeric_limits<RangeType>::max() : result; // result signed and value unsigned => result max
-	return value < 0 ? 0 : result; // result unsigned and value signed => 0
-}
+/**
+   * Convert a number value from Type to RangeType in truncating the source value
+   * to the max/min value acceptable for RangeType (without modulo conversion)
+   * 
+   * For example for a conversion from uint32_t to uint16_t [0-FFFFFFF] -> [0-FFFF]
+   * Util::range<uint16_t>(0x10000) gives 0xFFFF
+   * Whereas uint16_t(0x10000) gives 0
+   * 
+   */
+  template<typename RangeType, typename Type> 
+  inline RangeType range(Type number) { 
+      constexpr auto Min = std::numeric_limits<RangeType>::min();
+      constexpr auto Max = std::numeric_limits<RangeType>::max();
+      if (number > static_cast<Type>(Max)) {
+          return Max;
+      }
+      if (number < static_cast<Type>(Min)) {
+          return Min;
+      }
+      return static_cast<RangeType>(number);
+  }
+  
 const std::string& typeOf(const std::type_info& info);
 template<typename ObjectType>
 inline const std::string& typeOf(const ObjectType& object) { return typeOf(typeid(object)); }
